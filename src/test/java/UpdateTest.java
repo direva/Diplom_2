@@ -16,7 +16,7 @@ public class UpdateTest {
     }
 
     @Test
-    public void updateUserWithAuthorization() {
+    public void updateNameWithAuthorization() {
         User userPatch = new User();
         userPatch.setName("qa_reva1");
         User user = new User("qa_reva@yandex.ru", "qa_reva_pass");
@@ -28,9 +28,53 @@ public class UpdateTest {
     }
 
     @Test
-    public void updateUserWithoutAuthorization() {
+    public void updatePasswordWithAuthorization() {
+        User userPatch = new User();
+        userPatch.setPassword("qa_reva_pass");
+        User user = new User("qa_reva@yandex.ru", "qa_reva_pass");
+        String accessToken = sendLoginRequest(user).body().as(LoggedInUser.class).getAccessToken();
+        sendUpdateRequest(userPatch, accessToken.replace("Bearer ", ""))
+                .then().assertThat().body("success", equalTo(true))
+                .and()
+                .statusCode(200);
+    }
+
+    @Test
+    public void updateEmailWithAuthorization() {
+        User userPatch = new User();
+        userPatch.setEmail("qa_reva@yandex.ru");
+        User user = new User("qa_reva@yandex.ru", "qa_reva_pass");
+        String accessToken = sendLoginRequest(user).body().as(LoggedInUser.class).getAccessToken();
+        sendUpdateRequest(userPatch, accessToken.replace("Bearer ", ""))
+                .then().assertThat().body("success", equalTo(true))
+                .and()
+                .statusCode(200);
+    }
+
+    @Test
+    public void updateNameWithoutAuthorization() {
         User userPatch = new User();
         userPatch.setName("qa_reva1");
+        sendUpdateRequest(userPatch, "")
+                .then().assertThat().body("success", equalTo(false))
+                .and()
+                .statusCode(401);
+    }
+
+    @Test
+    public void updatePasswordWithoutAuthorization() {
+        User userPatch = new User();
+        userPatch.setPassword("qa_reva_pass");
+        sendUpdateRequest(userPatch, "")
+                .then().assertThat().body("success", equalTo(false))
+                .and()
+                .statusCode(401);
+    }
+
+    @Test
+    public void updateEmailWithoutAuthorization() {
+        User userPatch = new User();
+        userPatch.setEmail("qa_reva@yandex.ru");
         sendUpdateRequest(userPatch, "")
                 .then().assertThat().body("success", equalTo(false))
                 .and()
