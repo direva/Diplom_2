@@ -12,6 +12,6 @@ public class LoggedInUser {
     }
 
     public String getAccessToken() {
-        return accessToken;
+        return accessToken.replace("Bearer ", "");
     }
 }
